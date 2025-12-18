@@ -20,7 +20,8 @@ SCREEN_TITLE = "F1 Race Replay"
 class F1RaceReplayWindow(arcade.Window):
     def __init__(self, frames, track_statuses, example_lap, drivers, title,
                  playback_speed=1.0, driver_colors=None, circuit_rotation=0.0,
-                 left_ui_margin=340, right_ui_margin=260, total_laps=None):
+                 left_ui_margin=340, right_ui_margin=260, total_laps=None,
+                 grid_positions=None):
         # Set resizable to True so the user can adjust mid-sim
         super().__init__(SCREEN_WIDTH, SCREEN_HEIGHT, title, resizable=True)
 
@@ -34,6 +35,7 @@ class F1RaceReplayWindow(arcade.Window):
         self.paused = False
         self.total_laps = total_laps
         self.has_weather = any("weather" in frame for frame in frames) if frames else False
+        self.grid_positions = grid_positions or {}  # Starting grid positions for each driver
 
         # Rotation (degrees) to apply to the whole circuit around its centre
         self.circuit_rotation = circuit_rotation
@@ -46,7 +48,8 @@ class F1RaceReplayWindow(arcade.Window):
         self.toggle_drs_zones = True 
         # UI components
         leaderboard_x = max(20, self.width - self.right_ui_margin + 12)
-        self.leaderboard_comp = LeaderboardComponent(x=leaderboard_x, width=240)
+        self.leaderboard_comp = LeaderboardComponent(x=leaderboard_x, width=240, grid_positions=grid_positions)
+        self.show_position_delta = True  # Toggle for showing positions gained/lost
         self.weather_comp = WeatherComponent(left=20, top_offset=170)
         self.legend_comp = LegendComponent(x=max(12, self.left_ui_margin - 320))
         self.driver_info_comp = DriverInfoComponent(left=20, width=300)
@@ -406,8 +409,11 @@ class F1RaceReplayWindow(arcade.Window):
 
         # Controls Legend - Bottom Left (keeps small offset from left UI edge)
         legend_x = max(12, self.left_ui_margin - 320) if hasattr(self, "left_ui_margin") else 20
-        legend_y = 180 # Height of legend block
+        legend_y = 210 # Height of legend block (increased to fit all controls with bottom padding)
         legend_icons = self.legend_comp._control_icons_textures # icons
+        
+        # Show current state of position delta toggle
+        delta_state = "ON" if self.show_position_delta else "OFF"
         legend_lines = [
             ("Controls:"),
             ("[SPACE]  Pause/Resume"),
@@ -416,6 +422,7 @@ class F1RaceReplayWindow(arcade.Window):
             ("[R]       Restart"),
             ("[D]       Toggle DRS Zones"),
             ("[B]       Toggle Progress Bar"),
+            (f"[G]      Toggle Grid Pos"),
         ]
         
         for i, lines in enumerate(legend_lines):
@@ -498,6 +505,9 @@ class F1RaceReplayWindow(arcade.Window):
             self.toggle_drs_zones = not self.toggle_drs_zones
         elif symbol == arcade.key.B:
             self.progress_bar_comp.toggle_visibility() # toggle progress bar visibility
+        elif symbol == arcade.key.G:
+            self.show_position_delta = not self.show_position_delta  # toggle position delta display
+            self.leaderboard_comp.show_delta = self.show_position_delta
 
     def on_mouse_press(self, x: float, y: float, button: int, modifiers: int):
         # forward to components; stop at first that handled it

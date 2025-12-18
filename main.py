@@ -83,6 +83,7 @@ def main(year=None, round_number=None, playback_speed=1, session_type='R'):
         title=f"{session.event['EventName']} - {'Sprint' if session_type == 'S' else 'Race'}",
         total_laps=race_telemetry['total_laps'],
         circuit_rotation=circuit_rotation,
+        grid_positions=race_telemetry.get('grid_positions'),
         chart=chart,
     )
 
