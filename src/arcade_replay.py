@@ -9,7 +9,7 @@ SCREEN_TITLE = "F1 Race Replay"
 
 def run_arcade_replay(frames, track_statuses, example_lap, drivers, title,
                       playback_speed=1.0, driver_colors=None, circuit_rotation=0.0, total_laps=None, 
-                      sector_info=None, chart=False,
+                      sector_info=None,
                       visible_hud=True):
     window = F1RaceReplayWindow(
         frames=frames,

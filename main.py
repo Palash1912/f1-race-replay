@@ -97,9 +97,6 @@ def main(year=None, round_number=None, playback_speed=1, session_type='R', visib
 
     # Run the arcade replay
 
-    # Check for optional chart flag
-    chart = "--chart" in sys.argv
-
     run_arcade_replay(
         frames=race_telemetry['frames'],
         track_statuses=race_telemetry['track_statuses'],
@@ -111,7 +108,6 @@ def main(year=None, round_number=None, playback_speed=1, session_type='R', visib
         total_laps=race_telemetry['total_laps'],
         circuit_rotation=circuit_rotation,
         sector_info=sector_info,
-        chart=chart,
         visible_hud=visible_hud
     )
 
